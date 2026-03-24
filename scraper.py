@@ -123,9 +123,17 @@ def scrape_dynamic_statistics(page, url):
     
     all_text_segments = []
     
-    # 1. Capture Dashboard Summary
-    summary = page.inner_text("body").split("Placement Details")[0]
-    all_text_segments.append(f"OVERALL SUMMARY - PLACEMENT STATISTICS DASHBOARD:\n{summary}")
+    # 1. Capture Dashboard Summary (Latest year only)
+    summary_text = page.inner_text("body").split("Placement Details")[0]
+    
+    # Prepend the year label to every line of the summary to prevent attribution errors
+    contextualized_summary = []
+    for line in summary_text.splitlines():
+        clean_l = line.strip()
+        if clean_l:
+            contextualized_summary.append(f"[AY. 2025-2026 DASHBOARD] {clean_l}")
+            
+    all_text_segments.append("OVERALL LATEST SUMMARY (EXCLUSIVELY FOR AY. 2025-2026):\n" + "\n".join(contextualized_summary))
     
     # 2. Iterate through Academic Year Tabs
     buttons = page.query_selector_all("button")
