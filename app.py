@@ -169,7 +169,12 @@ for turn in st.session_state.chat_history:
             f"<div class='agent-badge {css}'>🤖 {label}</div>",
             unsafe_allow_html=True,
         )
-        st.markdown(turn["ai"])
+        
+        parts = turn["ai"].split("\n\n📎 **Sources:**\n")
+        st.markdown(parts[0])
+        if len(parts) > 1:
+            with st.expander("📎 View Sources"):
+                st.markdown(parts[1])
 
 prefill = st.session_state.pop("prefill_question", None)
 user_input = st.chat_input(placeholder="Ask anything about VVIT — admissions, placements, campus, leadership...")
@@ -197,7 +202,12 @@ if query:
             f"<div class='agent-badge {css}'>🤖 {label}</div>",
             unsafe_allow_html=True,
         )
-        st.markdown(answer)
+        
+        parts = answer.split("\n\n📎 **Sources:**\n")
+        st.markdown(parts[0])
+        if len(parts) > 1:
+            with st.expander("📎 View Sources"):
+                st.markdown(parts[1])
 
     st.session_state.chat_history.append({
         "human": query,
