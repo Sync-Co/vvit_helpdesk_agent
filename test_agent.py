@@ -40,7 +40,7 @@ def run_tests():
     ]
 
     passed = 0
-    total = len(routing_cases) + 1 + 3
+    total = len(routing_cases) + 1 + 3 + 2
 
     print("--- Routing Tests ---")
     for i, (query, expected_route) in enumerate(routing_cases, 1):
@@ -92,6 +92,24 @@ def run_tests():
              passed += 1
         except Exception as e:
              print(f"  ❌ FAIL — {desc} — {e}")
+
+    print("\n" + "=" * 60)
+    print("--- Enterprise RAG Eval Tests ---")
+    rag_eval_cases = [
+        ("Who is the Registrar of VVIT?", "about_administration", "Dr. Y. Mallikarjuna Reddy"),
+        ("What B.Tech programs are offered at VVIT?", "admissions", "8 programs")
+    ]
+    
+    for query, expected_route, logic_desc in rag_eval_cases:
+        try:
+             ans, routed_to, _ = ask(app, query, chat_history=[])
+             print(f"\n[QUERY]: {query}")
+             print(f"[ROUTED]: {routed_to} (Expected: {expected_route})")
+             print(f"[ANSWER]:\n{ans}\n")
+             if routed_to == expected_route:
+                 passed += 1
+        except Exception as e:
+             print(f"  ❌ FAIL — Evals — {e}")
 
     print("\n" + "=" * 60)
     print(f"Final score: {passed}/{total} tests passed")
