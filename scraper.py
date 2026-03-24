@@ -99,7 +99,8 @@ def clean_text(raw: str) -> str:
             continue
         if len(line) < 20:
             # Important exceptions for metrics like '29 LPA' or '600+'
-            if not any(x in line for x in ["LPA", "CTC", "₹", "600+", "90+"]):
+            whitelist = ["LPA", "CTC", "₹", "600+", "90+", "Average", "Highest", "Lowest", "Placements", "Companies", "AY."]
+            if not any(x in line for x in whitelist):
                 continue
         if all(c in "•·–—-|/\\" for c in line):
             continue
@@ -124,7 +125,7 @@ def scrape_dynamic_statistics(page, url):
     
     # 1. Capture Dashboard Summary
     summary = page.inner_text("body").split("Placement Details")[0]
-    all_text_segments.append(f"OVERALL PLACEMENT STATISTICS DASHBOARD:\n{summary}")
+    all_text_segments.append(f"OVERALL SUMMARY - PLACEMENT STATISTICS DASHBOARD:\n{summary}")
     
     # 2. Iterate through Academic Year Tabs
     buttons = page.query_selector_all("button")
@@ -132,18 +133,27 @@ def scrape_dynamic_statistics(page, url):
     
     for btn in year_buttons:
         year_label = btn.inner_text().strip()
-        print(f"        → Clicking tab: {year_label}")
+        print(f"        → Clicking tab & injecting context: {year_label}")
         try:
             btn.click()
             page.wait_for_timeout(2000) # Wait for table to swap
             
-            # Capture the table area (we take the whole body part after 'Placement Details' to be safe)
+            # Capture the table area
             body_text = page.inner_text("body")
             if "Placement Details" in body_text:
                 table_content = body_text.split("Placement Details")[1]
-                all_text_segments.append(f"\nDETAILED PLACEMENT DATA FOR {year_label}:\n{table_content}")
             else:
-                all_text_segments.append(f"\nDETAILED PLACEMENT DATA FOR {year_label}:\n{body_text}")
+                table_content = body_text
+            
+            # FORCE CONTEXT INJECTION: Prepend the year to EVERY line in this section
+            # This ensures that any chunk taken from here will know its year.
+            contextualized_lines = []
+            for line in table_content.splitlines():
+                clean_l = line.strip()
+                if clean_l:
+                    contextualized_lines.append(f"[{year_label}] {clean_l}")
+            
+            all_text_segments.append(f"\nDETAILED PLACEMENT DATA FOR {year_label}:\n" + "\n".join(contextualized_lines))
                 
         except Exception as e:
             print(f"        ⚠ Failed to click/scrape {year_label}: {e}")
