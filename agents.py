@@ -15,6 +15,20 @@ from langgraph.graph import StateGraph, END
 
 load_dotenv()
 
+# Support user's LANGSMITH_ prefix for observability
+if os.environ.get("LANGSMITH_TRACING") == "true":
+    os.environ["LANGCHAIN_TRACING_V2"] = "true"
+if os.environ.get("LANGSMITH_API_KEY"):
+    os.environ["LANGCHAIN_API_KEY"] = os.environ.get("LANGSMITH_API_KEY")
+if os.environ.get("LANGSMITH_ENDPOINT"):
+    os.environ["LANGCHAIN_ENDPOINT"] = os.environ.get("LANGSMITH_ENDPOINT")
+if os.environ.get("LANGSMITH_PROJECT"):
+    os.environ["LANGCHAIN_PROJECT"] = os.environ.get("LANGSMITH_PROJECT")
+else:
+    # Fallback default
+    if not os.environ.get("LANGCHAIN_PROJECT"):
+        os.environ["LANGCHAIN_PROJECT"] = "SaptaMind"
+
 BASE_DIR   = os.path.dirname(__file__)
 INDEX_DIR  = os.path.join(BASE_DIR, "data")
 LLM_MODEL        = "gpt-4o"
