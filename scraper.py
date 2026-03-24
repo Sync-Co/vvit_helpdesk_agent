@@ -130,8 +130,10 @@ def scrape_all() -> list[dict]:
                 print(f"  → Scraping: {url}")
 
                 try:
-                    page.goto(url, wait_until="domcontentloaded", timeout=PAGE_TIMEOUT)
-                    page.wait_for_timeout(PAGE_WAIT_MS)
+                    try:
+                        page.goto(url, wait_until="networkidle", timeout=PAGE_TIMEOUT)
+                    except PlaywrightTimeout:
+                        print("     ⚠ Network idle timeout reached, attempting to scrape rendered DOM anyway...")
 
                     raw_text = page.inner_text("body")
                     text     = clean_text(raw_text)
