@@ -79,7 +79,7 @@ def format_sources(docs: list[dict]) -> str:
         url = doc["source"]
         if url and url not in seen:
             seen.add(url)
-            sources.append(f"• {doc['title']}: {url}")
+            sources.append(f"- {doc['title']}: {url}")
     return "\n".join(sources) if sources else ""
 
 def build_graph(indexes: dict) -> any:
