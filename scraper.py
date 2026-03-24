@@ -98,11 +98,57 @@ def clean_text(raw: str) -> str:
         if line in NAV_NOISE:
             continue
         if len(line) < 20:
-            continue
+            # Important exceptions for metrics like '29 LPA' or '600+'
+            if not any(x in line for x in ["LPA", "CTC", "₹", "600+", "90+"]):
+                continue
         if all(c in "•·–—-|/\\" for c in line):
             continue
         lines.append(line)
     return "\n".join(lines)
+
+def scrape_dynamic_statistics(page, url):
+    """
+    Specialized scraper for the statistics page to handle JS dashboard cards
+    and academic year tabs.
+    """
+    print("     ⚡ Running Interaction Scraper for Statistics...")
+    try:
+        page.goto(url, wait_until="networkidle", timeout=PAGE_TIMEOUT)
+    except PlaywrightTimeout:
+        pass
+    
+    # Wait for dashboard cards to be visible
+    page.wait_for_timeout(3000) 
+    
+    all_text_segments = []
+    
+    # 1. Capture Dashboard Summary
+    summary = page.inner_text("body").split("Placement Details")[0]
+    all_text_segments.append(f"OVERALL PLACEMENT STATISTICS DASHBOARD:\n{summary}")
+    
+    # 2. Iterate through Academic Year Tabs
+    buttons = page.query_selector_all("button")
+    year_buttons = [b for b in buttons if "AY." in b.inner_text()]
+    
+    for btn in year_buttons:
+        year_label = btn.inner_text().strip()
+        print(f"        → Clicking tab: {year_label}")
+        try:
+            btn.click()
+            page.wait_for_timeout(2000) # Wait for table to swap
+            
+            # Capture the table area (we take the whole body part after 'Placement Details' to be safe)
+            body_text = page.inner_text("body")
+            if "Placement Details" in body_text:
+                table_content = body_text.split("Placement Details")[1]
+                all_text_segments.append(f"\nDETAILED PLACEMENT DATA FOR {year_label}:\n{table_content}")
+            else:
+                all_text_segments.append(f"\nDETAILED PLACEMENT DATA FOR {year_label}:\n{body_text}")
+                
+        except Exception as e:
+            print(f"        ⚠ Failed to click/scrape {year_label}: {e}")
+            
+    return "\n\n".join(all_text_segments)
 
 # ─────────────────────────────────────────────
 # Main Scraper
@@ -130,13 +176,16 @@ def scrape_all() -> list[dict]:
                 print(f"  → Scraping: {url}")
 
                 try:
-                    try:
-                        page.goto(url, wait_until="networkidle", timeout=PAGE_TIMEOUT)
-                    except PlaywrightTimeout:
-                        print("     ⚠ Network idle timeout reached, attempting to scrape rendered DOM anyway...")
+                    if "statistics" in path:
+                        raw_text = scrape_dynamic_statistics(page, url)
+                    else:
+                        try:
+                            page.goto(url, wait_until="networkidle", timeout=PAGE_TIMEOUT)
+                        except PlaywrightTimeout:
+                            print("     ⚠ Network idle timeout reached, attempting to scrape rendered DOM anyway...")
+                        raw_text = page.inner_text("body")
 
-                    raw_text = page.inner_text("body")
-                    text     = clean_text(raw_text)
+                    text = clean_text(raw_text)
 
                     if len(text) < 100:
                         print(f"     ⚠ Too little content ({len(text)} chars), skipping")
