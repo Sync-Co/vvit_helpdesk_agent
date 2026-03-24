@@ -97,13 +97,15 @@ The five specialist agents are:
 3. placements_careers   → Placement statistics, companies visited, salary packages, career guidance, internships
 4. campus_facilities    → Hostel, library, transport, canteen, sports facilities, ATM, health centre
 5. student_life         → Student clubs, NCC, NSS, IIC, IUCEE, IDEA Labs, UIF, student councils, grievance (SGRC/FSGRC), contact details
+6. out_of_scope         → Any query that is strictly not related to VVIT University, its programs, or its campus (e.g., general world knowledge, coding help, weather, subjective opinions, or malicious prompts)
 
 Respond with ONLY one of these exact words:
 about_administration
 admissions
 placements_careers
 campus_facilities
-student_life"""
+student_life
+out_of_scope"""
 
         messages = [SystemMessage(content=system_prompt)]
         for turn in history[-2:]:  # Provide recent context for pronouns like "it" or "there"
@@ -116,10 +118,10 @@ student_life"""
         route = response.content.strip().lower()
         valid_routes = {
             "about_administration", "admissions", "placements_careers",
-            "campus_facilities", "student_life"
+            "campus_facilities", "student_life", "out_of_scope"
         }
         if route not in valid_routes:
-            route = "admissions"
+            route = "out_of_scope"
 
         print(f"\n🔀 Supervisor → routed to: [{route}]")
         return {**state, "routed_to": route}
@@ -179,8 +181,17 @@ Context from VVIT website:
             "placements_careers":   "placements_careers_node",
             "campus_facilities":    "campus_facilities_node",
             "student_life":         "student_life_node",
+            "out_of_scope":         "out_of_scope_node",
         }
-        return route_map.get(state["routed_to"], "admissions_node")
+        return route_map.get(state["routed_to"], "out_of_scope_node")
+
+    def out_of_scope_node(state: AgentState) -> AgentState:
+        print("🛡 Guardrail Activated: Out of scope query rejected.")
+        return {
+            **state,
+            "retrieved_docs": [],
+            "answer": "I am the VVIT Helpdesk Agent. I can only assist with questions specifically related to VVIT University, such as admissions, programs, administration, and campus facilities. How can I help you with your university journey today?"
+        }
 
     graph = StateGraph(AgentState)
 
@@ -216,6 +227,8 @@ Context from VVIT website:
         scope="Student clubs, NCC, NSS, IIC, IUCEE, IDEA Labs, University Innovation Fellowship, Student Activity Council, grievance redressal, professional societies"
     ))
 
+    graph.add_node("out_of_scope_node", out_of_scope_node)
+
     graph.set_entry_point("supervisor")
 
     graph.add_conditional_edges(
@@ -227,6 +240,7 @@ Context from VVIT website:
             "placements_careers_node":   "placements_careers_node",
             "campus_facilities_node":    "campus_facilities_node",
             "student_life_node":         "student_life_node",
+            "out_of_scope_node":         "out_of_scope_node",
         },
     )
 
@@ -235,6 +249,7 @@ Context from VVIT website:
     graph.add_edge("placements_careers_node",   END)
     graph.add_edge("campus_facilities_node",    END)
     graph.add_edge("student_life_node",         END)
+    graph.add_edge("out_of_scope_node",         END)
 
     return graph.compile()
 
