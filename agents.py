@@ -18,7 +18,7 @@ BASE_DIR   = os.path.dirname(__file__)
 INDEX_DIR  = os.path.join(BASE_DIR, "data")
 LLM_MODEL        = "gpt-4o"
 EMBEDDING_MODEL  = "text-embedding-3-small"
-RETRIEVAL_TOP_K  = 5
+RETRIEVAL_TOP_K  = 15
 
 class AgentState(TypedDict):
     query: str
