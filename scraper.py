@@ -90,20 +90,42 @@ PAGE_TIMEOUT   = 20000
 # ─────────────────────────────────────────────
 
 def clean_text(raw: str) -> str:
+    # Aggressive partial stripping for the HUGE university-wide header
+    NOISE_FRAGMENTS = [
+        "Vasireddy Venkatadri International Technological University",
+        "where values are nurtured, and aspirations find their wings",
+        "root, values are nurtured"
+    ]
+    
     lines = []
     for line in raw.splitlines():
         line = line.strip()
         if not line:
             continue
+            
+        # Strip exact matches
         if line in NAV_NOISE:
             continue
+            
+        # Strip fragments
+        for frag in NOISE_FRAGMENTS:
+            line = line.replace(frag, "").strip()
+        
+        if not line:
+            continue
+
         if len(line) < 20:
-            # Important exceptions for metrics like '29 LPA' or '600+'
-            whitelist = ["LPA", "CTC", "₹", "600+", "90+", "Average", "Highest", "Lowest", "Placements", "Companies", "AY."]
+            # Important exceptions for metrics and names
+            whitelist = [
+                "LPA", "CTC", "₹", "600+", "90+", "Average", "Highest", "Lowest", 
+                "Placements", "Companies", "AY.", "Chancellor", "Registrar", "Secretary"
+            ]
             if not any(x in line for x in whitelist):
                 continue
+        
         if all(c in "•·–—-|/\\" for c in line):
             continue
+            
         lines.append(line)
     return "\n".join(lines)
 

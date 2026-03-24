@@ -28,8 +28,8 @@ CATEGORIES = [
     "student_life",
 ]
 
-CHUNK_SIZE    = 500
-CHUNK_OVERLAP = 80
+CHUNK_SIZE    = 1000
+CHUNK_OVERLAP = 200
 EMBEDDING_MODEL = "text-embedding-3-small"
 
 def load_scraped_data() -> list[dict]:
