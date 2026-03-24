@@ -89,7 +89,8 @@ def build_graph(indexes: dict) -> any:
         query = state["query"]
         history = state.get("chat_history", [])
         
-        system_prompt = """You are the routing supervisor for the VVIT University Student Helpdesk.
+        system_prompt = f"""Current Date: {time.strftime('%B %d, %Y')}
+You are the routing supervisor for the VVIT University Student Helpdesk.
 
 Your ONLY job is to read the student's question and decide which specialist agent should handle it.
 
@@ -145,7 +146,10 @@ out_of_scope"""
             context = format_context(docs)
             sources = format_sources(docs)
 
-            system_prompt = f"""You are the {persona} for VVIT University (vvitu.ac.in).
+            system_prompt = f"""Today's Date: {time.strftime('%B %d, %Y')}. 
+This implies that the 'latest' or 'current' academic year is 2025-2026.
+
+You are the {persona} for VVIT University (vvitu.ac.in).
 
 Your scope: {scope}
 
