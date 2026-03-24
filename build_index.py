@@ -53,8 +53,14 @@ def build_documents(raw_pages: list[dict], category: str) -> list[Document]:
     for page in pages:
         chunks = splitter.split_text(page["text"])
         for i, chunk in enumerate(chunks):
+            # PROBLEM 1 & 2 FIX: Context Enrichment
+            # Injecting the page title directly into the chunk ensures that even if 
+            # the raw text misses a keyword (like 'Registrar'), the semantic vector 
+            # still heavily binds to it.
+            enriched_content = f"Page Title: {page['title']}\nSource: {page['url']}\n\n{chunk}"
+            
             doc = Document(
-                page_content=chunk,
+                page_content=enriched_content,
                 metadata={
                     "category": category,
                     "title":    page["title"],
