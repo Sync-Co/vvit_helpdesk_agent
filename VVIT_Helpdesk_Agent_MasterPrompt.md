@@ -30,10 +30,11 @@ A **Live AI Helpdesk Agent** covering ALL 6 navigation sections of VVIT's websit
 
 | What | Detail |
 |------|--------|
-| Scraper | Playwright (headless Chromium) — 55 pages across all sections |
-| Vector DBs | 5 separate FAISS indexes (one per domain) |
-| Agents | 6 total: 1 Supervisor + 5 Specialists |
-| UI | Streamlit chat with colour-coded agent routing badges |
+| Scraper | Playwright (headless) — Interaction-based for stats tabs |
+| Vector DBs | 5 separate FAISS indexes with Title/URL metadata injection |
+| Retrieval | MMR (Maximal Marginal Relevance) with k=15 |
+| Agents | 6 total: 1 Supervisor + 5 Specialists + 1 Out-of-Scope Guardrail |
+| UI | Streamlit with collapsible sources and badge-based routing |
 | Tracing | LangSmith (shows live agent routing — demo highlight) |
 
 ---
@@ -47,13 +48,13 @@ A **Live AI Helpdesk Agent** covering ALL 6 navigation sections of VVIT's websit
                     │  SUPERVISOR     │  ← classifies intent
                     │    AGENT        │    routes to specialist
                     └────────┬────────┘
-           ┌─────────┬───────┼────────┬──────────┐
-           ▼         ▼       ▼        ▼           ▼
-      [About &  [Admissions [Place-  [Campus    [Student
-      Admin     & Academic  ments &  Facili-    Life &
-      Agent]    Programs    Careers  ties       Organiz-
+           ┌─────────┬───────┼────────┬──────────┬──────────┐
+           ▼         ▼       ▼        ▼           ▼          ▼
+      [About &  [Admissions [Place-  [Campus    [Student    [OUT OF
+      Admin     & Academic  ments &  Facili-    Life &      SCOPE]
+      Agent]    Programs    Careers  ties       Organiz-    (Decline)
                 Agent]      Agent]   Agent]     ations
-                                                Agent]
+                                                 Agent]
            │         │       │        │           │
            ▼         ▼       ▼        ▼           ▼
     faiss_about  faiss_   faiss_   faiss_      faiss_

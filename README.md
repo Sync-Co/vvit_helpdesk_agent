@@ -7,10 +7,12 @@ Built as a capstone project for the **SaptaMind Agentic AI Mastery Program**, th
 ---
 
 ## 🌟 Key Features
-- **Headless React Scraping:** Bypasses legacy scraping limitations (like `requests` + `BeautifulSoup`) by utilizing **Playwright** to physically render the University's React SPA and extract hydrated content.
-- **5 Specialised AI Agents:** Uses LangGraph's Supervisor pattern to cleanly route questions to 5 distinct conversational personas (Admissions, Placements, Campus Life, etc.).
-- **Semantic Data Isolation:** Embeds knowledge into 5 separate **FAISS Vector Databases** to guarantee zero hallucination or cross-contamination.
-- **Modern Chat Interface:** Provides a lightweight, highly-polished Streamlit UI featuring interactive tabs and real-time execution badges.
+- **Headless React Scraping (v2.1):** Uses **Playwright** with `networkidle` synchronization to extract hydrated content from the University's React SPA.
+- **Improved Statistics Engine:** Includes an interaction-based scraper that contextually retrieves historical placement data (2023-2026) by programmatically clicking dashboard tabs.
+- **6 Specialised AI Agents:** Uses a LangGraph Supervisor to route questions to 5 specialist domains + a dedicated **out_of_scope** guardrail for defensive security.
+- **MMR Diversity Retrieval:** Implements **Maximal Marginal Relevance** (k=15) to ensure search results are diverse and representative across all university programs, eliminating list fragmentation.
+- **Forced Metadata Injection:** Injects Page Titles and URLs into every semantic chunk to solve 'lost context' retrieval failures for high-level roles.
+- **Modern Chat Interface:** A polished Streamlit UI with collapsible source citations and vertically formatted markdown responses.
 
 ---
 

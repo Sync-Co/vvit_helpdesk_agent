@@ -29,24 +29,24 @@ Type these questions LIVE into the chat box.
 **Speak:** "Now let's ask about core academic offerings."
 **Reaction:** Verifying accuracy of the exact branches.
 
-### Depth Extraction (Campus Life & Student Organizations)
-**Type:** `Tell me about hostel facilities at VVIT`
-**Expected Agent:** 🤖 Campus Facilities Agent (Green Badge)
-**Speak:** "The system flawlessly isolates different scopes. It knows hostel details differ from academic details."
+### Depth Extraction & Temporal Accuracy
+**Type:** `What was the highest package at VVIT in 2024-2025?`
+**Expected Agent:** 🤖 Placements & Careers Agent (Gold Badge)
+**Speak:** "The system isn't just pulling today's dashboard. It understands history. Watch it differentiate between the current 29 LPA and the 2024 records."
+**Reaction:** Significant interest in the temporal accuracy.
 
 **Type:** `What student clubs and activities does VVIT have?`
 **Expected Agent:** 🤖 Student Life & Organizations Agent (Teal Badge)
 **Speak:** "It can even pull from student affairs and clubs like NCC, NSS, and IDEA Labs."
 
-### The Multi-Turn Transition (Placements)
-**Type:** `What is the highest package at VVIT placements?`
-**Expected Agent:** 🤖 Placements & Careers Agent (Gold Badge)
-**Speak:** "Let's see if it pulled your actual 2025 placement records."
-**Reaction:** Surprise at the ₹29 LPA and company names.
-
+### The Multi-Turn Transition & Guardrails
 **Type:** `Does the CSE department have a good placement record?`
 **Expected Agent:** 🤖 Placements & Careers Agent (Gold Badge)
 **Speak:** "Notice I didn't say VVIT. It understands the context from my previous turns."
+
+**Type:** `Can you write a Python script for a snake game?`
+**Expected Agent:** 🛡️ Out of Scope Guardrail (Neutral Badge)
+**Speak:** "Finally, notice how it protects your resources. It politely refuses non-university queries, ensuring it stays a professional academic helper."
 
 ---
 
@@ -55,7 +55,7 @@ Type these questions LIVE into the chat box.
 *Action: Open LangSmith on second screen showing the agent trace.*
 
 **Script:**
-> "5 AI agents just processed that question. Each one searched its own private knowledge base. Your students build systems like this by Week 6. Every line of this code."
+> "6 specialized agents just processed that. We've implemented **Maximal Marginal Relevance (MMR)** search to ensure it finds information from every department, not just the front page. Every line of this code is production-grade."
 
 ---
 
