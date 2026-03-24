@@ -52,7 +52,9 @@ def load_indexes() -> dict:
     return indexes
 
 def retrieve(query: str, vectorstore: FAISS, top_k: int = RETRIEVAL_TOP_K) -> list[dict]:
-    results = vectorstore.similarity_search(query, k=top_k)
+    # Use Maximal Marginal Relevance to penalize redundant chunks from the same page
+    # fetch_k = 40 pulls a larger pool to select the most diverse top_k
+    results = vectorstore.max_marginal_relevance_search(query, k=top_k, fetch_k=40)
     return [
         {
             "content": doc.page_content,
