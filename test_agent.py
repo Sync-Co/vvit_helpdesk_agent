@@ -97,6 +97,8 @@ def run_tests():
     print("--- Enterprise RAG Eval Tests ---")
     rag_eval_cases = [
         ("Who is the Registrar of VVIT?", "about_administration", "Dr. Y. Mallikarjuna Reddy"),
+        ("Where did the Registrar obtain his B.E. and in what year?", "about_administration", "Osmania University, 1987"),
+        ("What is the Registrar's field of Ph.D. specialization?", "about_administration", "Radar Signal and Image Processing"),
         ("What B.Tech programs are offered at VVIT?", "admissions", "8 programs")
     ]
     
@@ -105,9 +107,17 @@ def run_tests():
              ans, routed_to, _ = ask(app, query, chat_history=[])
              print(f"\n[QUERY]: {query}")
              print(f"[ROUTED]: {routed_to} (Expected: {expected_route})")
-             print(f"[ANSWER]:\n{ans}\n")
-             if routed_to == expected_route:
+             print(f"[TARGET]: {logic_desc}")
+             
+             # Simple keyword assertion for verification
+             keywords = logic_desc.replace(",", "").split()
+             match_count = sum(1 for k in keywords if k.lower() in ans.lower())
+             
+             if routed_to == expected_route and match_count > 0:
+                 print(f"  ✅ PASS — [{logic_desc}] verified in answer.")
                  passed += 1
+             else:
+                 print(f"  ❌ FAIL — Content mismatch for [{logic_desc}]")
         except Exception as e:
              print(f"  ❌ FAIL — Evals — {e}")
 
